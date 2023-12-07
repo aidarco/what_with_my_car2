@@ -62,7 +62,7 @@ class AuthButton extends StatelessWidget {
     return TextButton(
       onPressed: () {
 
-        Navigator.pushReplacementNamed(context, "/news");
+        Navigator.pushReplacementNamed(context, "nav_bar");
       },
       style: ButtonStyle(
         splashFactory: NoSplash.splashFactory,

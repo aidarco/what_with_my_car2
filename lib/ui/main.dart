@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'nav_bar.dart';
 import 'news.dart';
 import 'auth.dart';
 
@@ -17,7 +18,7 @@ class MyApp extends StatelessWidget {
       routes: {
         "/": (context) => Auth(),
         "/news": (context) => News(),
-
+        "nav_bar": (context) => Nav_bar(),
 
 
       },
