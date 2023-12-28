@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "230724035847",
+    "project_id": "what-with-my-car",
+    "storage_bucket": "what-with-my-car.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:230724035847:android:9764f7dde987fcdc1c91a2",
+        "android_client_info": {
+          "package_name": "com.example.what_with_my_car"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBmMFiMwZA_k9I96HtV4gY_uFcghLFzJkk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

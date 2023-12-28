@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:what_with_my_car/blocs/authBloc/auth_bloc.dart';
 
-class Auth extends StatefulWidget {
+class Auth extends StatelessWidget {
   const Auth({super.key});
 
-  @override
-  State<Auth> createState() => _AuthState();
-}
 
-class _AuthState extends State<Auth> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
 
+    final TextEditingController emailController = TextEditingController();
+    final TextEditingController passwordController = TextEditingController();
+    return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.grey.shade900,
       body: Padding(
@@ -28,22 +28,24 @@ class _AuthState extends State<Auth> {
                   image: DecorationImage(
                       image: AssetImage("lib/images/дарт.png"))),
             ),
-            const TextFieldAuthWidget(
+            TextFieldAuthWidget(
+              controller: emailController,
               hintText: "Login",
             ),
             const SizedBox(
               height: 24,
             ),
-            const TextFieldAuthWidget(
+            TextFieldAuthWidget(
+              controller: passwordController,
               hintText: "Password",
             ),
             const SizedBox(
               height: 24,
             ),
-            const SizedBox(
+            SizedBox(
               height: 55,
               width: double.infinity,
-              child: AuthButton(),
+              child:AuthPageButton(emailController: emailController, passwordController: passwordController)
             ),
           ],
         ),
@@ -52,30 +54,109 @@ class _AuthState extends State<Auth> {
   }
 }
 
-class AuthButton extends StatelessWidget {
-  const AuthButton({
+class AuthPageButton extends StatelessWidget {
+  const AuthPageButton({
     super.key,
+    required this.emailController,
+    required this.passwordController,
   });
+
+  final TextEditingController emailController;
+  final TextEditingController passwordController;
 
   @override
   Widget build(BuildContext context) {
-    return TextButton(
-      onPressed: () {
-
-        Navigator.pushReplacementNamed(context, "nav_bar");
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state is UserLoginSucces) {
+          Navigator.pushReplacementNamed(context, "nav_bar");
+        }
+        if (state is UserLoginError) {
+          showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                content: Text(
+                  state.error,
+                  style: const TextStyle(
+                      color: Colors.cyan,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold),
+                ),
+              ));
+        }
+        if (state is UserLoginLoading) {
+          const Center(child: CircularProgressIndicator(color: Colors.white,),);
+        }
       },
-      style: ButtonStyle(
-        splashFactory: NoSplash.splashFactory,
-        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-            RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        )),
-        backgroundColor:
-            MaterialStateProperty.all(Colors.grey.shade800),
+      child: TextButton(
+        onPressed: () {
+          BlocProvider.of<AuthBloc>(context)
+              .add(UserLogin(email: emailController.text, password: passwordController.text));
+        },
+        style: ButtonStyle(
+          splashFactory: NoSplash.splashFactory,
+          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+              RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              )),
+          backgroundColor: MaterialStateProperty.all(Colors.grey.shade800),
+        ),
+        child: const Text(
+          "Войти",
+          style: TextStyle(color: Colors.white),
+        ),
       ),
-      child: const Text(
-        "Войти",
-        style: TextStyle(color: Colors.white),
+    );
+  }
+}
+
+class AuthButton extends StatelessWidget {
+  final String email;
+  final String password;
+
+  const AuthButton({super.key, required this.email, required this.password});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state is UserLoginSucces) {
+          Navigator.pushReplacementNamed(context, "nav_bar");
+        }
+        if (state is UserLoginError) {
+          showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                    content: Text(
+                      state.error,
+                      style: const TextStyle(
+                          color: Colors.cyan,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ));
+        }
+        if (state is UserLoginLoading) {
+        const Center(child: CircularProgressIndicator(color: Colors.white,),);
+        }
+      },
+      child: TextButton(
+        onPressed: () {
+          BlocProvider.of<AuthBloc>(context)
+              .add(UserLogin(email: email.toString(), password: password.toString()));
+        },
+        style: ButtonStyle(
+          splashFactory: NoSplash.splashFactory,
+          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+              RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          )),
+          backgroundColor: MaterialStateProperty.all(Colors.grey.shade800),
+        ),
+        child: const Text(
+          "Войти",
+          style: TextStyle(color: Colors.white),
+        ),
       ),
     );
   }
@@ -83,12 +164,15 @@ class AuthButton extends StatelessWidget {
 
 class TextFieldAuthWidget extends StatelessWidget {
   final hintText;
+  final controller;
 
-  const TextFieldAuthWidget({super.key, required this.hintText});
+  const TextFieldAuthWidget(
+      {super.key, required this.hintText, required this.controller});
 
   @override
   Widget build(BuildContext context) {
     return TextField(
+      controller: controller,
       textAlign: TextAlign.center,
       cursorColor: Colors.white,
       decoration: InputDecoration(
