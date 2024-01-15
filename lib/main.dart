@@ -1,8 +1,10 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:what_with_my_car/ui/reg_page.dart';
 import 'blocs/authBloc/auth_bloc.dart';
-import 'firebase_firestore.dart';
+import 'blocs/regBloc/reg_bloc.dart';
+import 'repos/firebase_firestore.dart';
 import 'firebase_options.dart';
 import 'ui/nav_bar.dart';
 import 'ui/news.dart';
@@ -22,17 +24,27 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return RepositoryProvider(
-      create: (context) => FirebaseFirestore(),
-      child: BlocProvider(
-        create: (context) => AuthBloc(repo: RepositoryProvider.of<FirebaseFirestore>(context)),
+      create: (context) => Firebasefirestore(),
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create: (context) =>
+                AuthBloc(
+                    repo: RepositoryProvider.of<Firebasefirestore>(context)),
+          ),
+          BlocProvider(
+            create: (context) => RegBloc(repo: RepositoryProvider.of<Firebasefirestore>(context)),
+          ),
+        ],
         child: MaterialApp(
           debugShowCheckedModeBanner: false,
           theme: ThemeData(
-              appBarTheme: AppBarTheme(backgroundColor: Colors.cyan)),
+              appBarTheme: const AppBarTheme(backgroundColor: Colors.cyan)),
           routes: {
-            "/": (context) => Auth(),
-            "/news": (context) => News(),
-            "nav_bar": (context) => Nav_bar(),
+            "/": (context) => const Auth(),
+            "news": (context) => const News(),
+            "nav_bar": (context) => const Nav_bar(),
+            "reg": (context) => const UserRegistration(),
 
 
           },

@@ -10,7 +10,7 @@ class News extends StatelessWidget {
         body: CustomScrollView(
           slivers: [
             SliverAppBar(
-              title: Text("НОВОСТИ", style: TextStyle(color: Colors.white , fontWeight: FontWeight.bold, fontSize: 24),),
+              title: const Text("НОВОСТИ", style: TextStyle(color: Colors.white , fontWeight: FontWeight.bold, fontSize: 24),),
               backgroundColor: Colors.grey.shade800,
             ),
             const SliverToBoxAdapter(
@@ -20,7 +20,7 @@ class News extends StatelessWidget {
             ),
             SliverList.builder(
                 itemCount: 4,
-                itemBuilder: (context, index) => NewsWidget())
+                itemBuilder: (context, index) => const NewsWidget())
           ],
         ));
   }
@@ -57,8 +57,8 @@ class NewsWidget extends StatelessWidget {
                   ),
                 ),
 
-            Padding(
-              padding: const EdgeInsets.all(8.0),
+            const Padding(
+              padding: EdgeInsets.all(8.0),
               child: Text("Тест тест текст тесте тест  ", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white ) ,),
             )
           ],

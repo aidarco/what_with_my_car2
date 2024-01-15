@@ -5,10 +5,8 @@ import 'package:what_with_my_car/blocs/authBloc/auth_bloc.dart';
 class Auth extends StatelessWidget {
   const Auth({super.key});
 
-
   @override
   Widget build(BuildContext context) {
-
     final TextEditingController emailController = TextEditingController();
     final TextEditingController passwordController = TextEditingController();
     return Scaffold(
@@ -43,10 +41,22 @@ class Auth extends StatelessWidget {
               height: 24,
             ),
             SizedBox(
-              height: 55,
-              width: double.infinity,
-              child:AuthPageButton(emailController: emailController, passwordController: passwordController)
+                height: 55,
+                width: double.infinity,
+                child: AuthPageButton(
+                    emailController: emailController,
+                    passwordController: passwordController)),
+            const SizedBox(
+              height: 28,
             ),
+            GestureDetector(
+                onTap: () {
+                  Navigator.pushNamed(context, "reg");
+                },
+                child: const Text(
+                  "Новый пользователь ?",
+                  style: TextStyle(fontSize: 18, color: Colors.white),
+                )),
           ],
         ),
       ),
@@ -75,30 +85,34 @@ class AuthPageButton extends StatelessWidget {
           showDialog(
               context: context,
               builder: (context) => AlertDialog(
-                content: Text(
-                  state.error,
-                  style: const TextStyle(
-                      color: Colors.cyan,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold),
-                ),
-              ));
+                    content: Text(
+                      state.error,
+                      style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ));
         }
         if (state is UserLoginLoading) {
-          const Center(child: CircularProgressIndicator(color: Colors.white,),);
+          const Center(
+            child: CircularProgressIndicator(
+              color: Colors.white,
+            ),
+          );
         }
       },
       child: TextButton(
         onPressed: () {
-          BlocProvider.of<AuthBloc>(context)
-              .add(UserLogin(email: emailController.text, password: passwordController.text));
+          BlocProvider.of<AuthBloc>(context).add(UserLogin(
+              email: emailController.text, password: passwordController.text));
         },
         style: ButtonStyle(
           splashFactory: NoSplash.splashFactory,
           shape: MaterialStateProperty.all<RoundedRectangleBorder>(
               RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              )),
+            borderRadius: BorderRadius.circular(16),
+          )),
           backgroundColor: MaterialStateProperty.all(Colors.grey.shade800),
         ),
         child: const Text(
@@ -137,13 +151,17 @@ class AuthButton extends StatelessWidget {
                   ));
         }
         if (state is UserLoginLoading) {
-        const Center(child: CircularProgressIndicator(color: Colors.white,),);
+          const Center(
+            child: CircularProgressIndicator(
+              color: Colors.white,
+            ),
+          );
         }
       },
       child: TextButton(
         onPressed: () {
-          BlocProvider.of<AuthBloc>(context)
-              .add(UserLogin(email: email.toString(), password: password.toString()));
+          BlocProvider.of<AuthBloc>(context).add(UserLogin(
+              email: email.toString(), password: password.toString()));
         },
         style: ButtonStyle(
           splashFactory: NoSplash.splashFactory,
