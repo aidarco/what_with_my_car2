@@ -1,6 +1,9 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get_navigation/src/root/get_material_app.dart';
+import 'package:what_with_my_car/ui/add_problem.dart';
+import 'package:what_with_my_car/ui/mainPage.dart';
 import 'package:what_with_my_car/ui/reg_page.dart';
 import 'blocs/authBloc/auth_bloc.dart';
 import 'blocs/regBloc/reg_bloc.dart';
@@ -36,19 +39,22 @@ class MyApp extends StatelessWidget {
             create: (context) => RegBloc(repo: RepositoryProvider.of<Firebasefirestore>(context)),
           ),
         ],
-        child: MaterialApp(
+        child: GetMaterialApp(
           debugShowCheckedModeBanner: false,
           theme: ThemeData(
-              appBarTheme: const AppBarTheme(backgroundColor: Colors.cyan)),
+              appBarTheme: const AppBarTheme(backgroundColor: Colors.white),
+          ),
           routes: {
             "/": (context) => const Auth(),
             "news": (context) => const News(),
             "nav_bar": (context) => const Nav_bar(),
             "reg": (context) => const UserRegistration(),
+            "add": (context) =>  AddProblem(),
+            "main": (context) => MainPage(),
 
 
           },
-          initialRoute: "/",
+          initialRoute: "main",
         ),
       ),
     );

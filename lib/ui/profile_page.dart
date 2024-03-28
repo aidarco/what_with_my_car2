@@ -16,25 +16,10 @@ class User_Profile extends StatefulWidget {
 class _User_ProfileState extends State<User_Profile> {
   final currentUser = FirebaseAuth.instance.currentUser!;
 
-
-// pickImage(ImageSource source) async
-// {
-//   final ImagePicker _imagePicker = ImagePicker();
-//   XFile? _file = await _imagePicker.pickImage(source: source);
-//   if (_file != null)
-//     {
-//       return await _file.readAsBytes();
-//     }
-//   print("No img sected");
-// }
-//
-// void selectImage() async{
-// Uint8List img =  await pickImage(ImageSource.gallery);
-// }
   Future<XFile?> pickImageFromGallery() async {
-    final ImagePicker _picker = ImagePicker();
+    final ImagePicker picker = ImagePicker();
     try {
-      XFile? pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+      XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery);
       return pickedFile;
     } on PlatformException catch (e) {
       print("Failed to pick image: $e");
@@ -56,7 +41,6 @@ class _User_ProfileState extends State<User_Profile> {
 
 
 
-  XFile? _pickedImage;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,7 +54,6 @@ class _User_ProfileState extends State<User_Profile> {
               if (snapshot.hasData) {
                 Map<String, dynamic> userData =
                     snapshot.data!.data() as Map<String, dynamic>;
-                print(" --------- " + currentUser.uid);
                 return Column(
                   children: [
                     Container(
@@ -80,7 +63,7 @@ class _User_ProfileState extends State<User_Profile> {
                               bottomLeft: Radius.circular(16),
                               bottomRight: Radius.circular(16))),
                       child: Padding(
-                        padding: EdgeInsets.all(24.0),
+                        padding: const EdgeInsets.all(24.0),
                         child: Center(
                           child: Stack(
                             children: [
@@ -88,7 +71,7 @@ class _User_ProfileState extends State<User_Profile> {
                                 radius: 88,
                                 backgroundImage:
                                 (userData["avatar"] != null) ?
-                                NetworkImage(userData["avatar"]) : NetworkImage("https://picsum.photos/250?image=9")
+                                NetworkImage(userData["avatar"]) : const NetworkImage("https://picsum.photos/250?image=9")
 
                               ),
                               Positioned(
@@ -99,7 +82,6 @@ class _User_ProfileState extends State<User_Profile> {
                                         XFile? pickedImage = await pickImageFromGallery();
                                         if (pickedImage != null) {
                                           setState(() {
-                                            _pickedImage = pickedImage;
                                           });
                                           String imageUrl = await saveImageToFirebaseStorage(
                                               currentUser.uid,
@@ -108,7 +90,7 @@ class _User_ProfileState extends State<User_Profile> {
                                               currentUser.uid, imageUrl);
                                         }
                                       },
-                                      icon: Icon(
+                                      icon: const Icon(
                                         Icons.cached,
                                         color: Colors.white,
                                         size: 50,
@@ -128,10 +110,10 @@ class _User_ProfileState extends State<User_Profile> {
                           borderRadius: BorderRadius.circular(12)),
                       child: Center(
                           child: Padding(
-                        padding: EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.all(8.0),
                         child: Text(
                           userData["name"],
-                          style: TextStyle(color: Colors.white, fontSize: 24),
+                          style: const TextStyle(color: Colors.white, fontSize: 24),
                         ),
                       )),
                     ),
@@ -204,6 +186,7 @@ class _User_ProfileState extends State<User_Profile> {
                     ),
                     TextButton(
                         onPressed: () {
+                          FirebaseAuth.instance.signOut();
                           Navigator.pushNamed(context, "/");
                         },
                         child: const Text("Выйти",

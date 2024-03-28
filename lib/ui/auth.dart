@@ -94,10 +94,15 @@ class AuthPageButton extends StatelessWidget {
                     ),
                   ));
         }
-        if (state is UserLoginLoading) {
-          const Center(
-            child: CircularProgressIndicator(
-              color: Colors.white,
+       else if (state is UserLoginLoading) {
+          // Show loading indicator
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (context) => const Center(
+              child: CircularProgressIndicator(
+                color: Colors.white,
+              ),
             ),
           );
         }
@@ -106,6 +111,8 @@ class AuthPageButton extends StatelessWidget {
         onPressed: () {
           BlocProvider.of<AuthBloc>(context).add(UserLogin(
               email: emailController.text, password: passwordController.text));
+       //   BlocProvider.of<AuthBloc>(context).add(UserLoginLoading() as AuthEvent);
+
         },
         style: ButtonStyle(
           splashFactory: NoSplash.splashFactory,
