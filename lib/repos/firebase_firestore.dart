@@ -14,16 +14,13 @@ class Firebasefirestore {
 
   Future<void> firebaseAuth(
       {required String email, required String password}) async {
-
-
     final result =
-        await auth.signInWithEmailAndPassword(email: email, password: password);
-
+    await auth.signInWithEmailAndPassword(email: email, password: password);
   }
 
   Future<void> firebaseReg(
       {required String email, required String password}) async {
-    UserCredential  result = await auth.createUserWithEmailAndPassword(
+    UserCredential result = await auth.createUserWithEmailAndPassword(
         email: email, password: password);
     String uid = result.user!.uid;
     final user = db.collection("Users").doc(uid);
@@ -31,8 +28,8 @@ class Firebasefirestore {
         name: email.toString().split("@")[0],
         description: "",
         id: uid,
-        problemsDesided: "0",
-        problemsCreated: "0");
+        problemsDesided: 0,
+        problemsCreated: 0);
     await user.set(model.toJson());
   }
 
@@ -48,13 +45,18 @@ class Firebasefirestore {
 
   }) async {
     final FirebaseAuth auth = FirebaseAuth.instance;
-    final String id = FirebaseFirestore.instance.collection('problems').doc().id;
+    final String id = FirebaseFirestore.instance
+        .collection('problems')
+        .doc()
+        .id;
 
     List<String> imageUrls = [];
     try {
       for (final imagePath in imagePaths) {
-        final ref = FirebaseStorage.instance.ref().child('problem_images/$id/${basename(imagePath)}');
-        final uploadTask = ref.putFile(File(imagePath)); // Use File instance for upload
+        final ref = FirebaseStorage.instance.ref().child(
+            'problem_images/$id/${basename(imagePath)}');
+        final uploadTask = ref.putFile(
+            File(imagePath)); // Use File instance for upload
         final snapshot = await uploadTask;
         imageUrls.add(await snapshot.ref.getDownloadURL());
       }
@@ -72,7 +74,10 @@ class Firebasefirestore {
         description: description,
         problemName: problemName,
         imageUrls: imageUrls,
-        carMark: carMark, carModel: carModel, problemType:  problemType, year: year,
+        carMark: carMark,
+        carModel: carModel,
+        problemType: problemType,
+        year: year,
 
       ).toMap());
     } catch (e) {
@@ -87,13 +92,15 @@ class Firebasefirestore {
       final collectionRef = FirebaseFirestore.instance.collection('problems');
       final snapshot = await collectionRef.get();
 
-      final problems = snapshot.docs.map((doc) => ProblemModel.fromMap(doc.data())).toList();
+      final problems = snapshot.docs.map((doc) =>
+          ProblemModel.fromMap(doc.data())).toList();
       return problems;
     } catch (e) {
       print('Error fetching problems: $e');
       rethrow; // Re-throw the exception for further handling
     }
   }
+
   Stream<ProblemModel?> getProblemStreamFromFirestore({required String id}) {
     try {
       final docRef = FirebaseFirestore.instance.collection('problems').doc(id);
@@ -116,7 +123,8 @@ class Firebasefirestore {
     required CommentModel comment,
   }) async {
     try {
-      final problemRef = FirebaseFirestore.instance.collection('problems').doc(problemId);
+      final problemRef = FirebaseFirestore.instance.collection('problems').doc(
+          problemId);
 
       // Добавляем комментарий к списку комментариев проблемы
       await problemRef.update({
@@ -129,32 +137,55 @@ class Firebasefirestore {
   }
 
 
-  Stream<QuerySnapshot> getFilteredProblemsStream(
-      String selectedBrand,
+  Stream<QuerySnapshot> getFilteredProblemsStream(String selectedBrand,
       String selectedModel,
       String selectedTypeOfBreakdown,
-      String searchString,
-      ) {
+      String searchString,) {
+    Query<Map<String, dynamic>> query = FirebaseFirestore.instance.collection(
+        'problems');
 
+    // Фильтрация по названию проблемы (поиск)
+    if (searchString.isNotEmpty) {
+      query = query
+          .where('problemName', isGreaterThanOrEqualTo: searchString)
+          .where('problemName', isLessThan: searchString + 'z');
+    }
 
-    if(selectedBrand == "" && selectedModel == "" && selectedTypeOfBreakdown == "" )
-      {
-        return FirebaseFirestore.instance.collection('problems')
-            .where('problemName', isGreaterThanOrEqualTo: searchString)
-            .where('problemName', isLessThan: searchString + 'z')
-            .snapshots();
-      }
+    // Фильтрация по марке
+    if (selectedBrand.isNotEmpty) {
+      query = query.where('carMark', isEqualTo: selectedBrand);
+    }
 
-    return FirebaseFirestore.instance.collection('problems')
-        .where('carMark', isEqualTo: selectedBrand)
-        .where('carModel', isEqualTo: selectedModel)
-        .where('problemType', isEqualTo: selectedTypeOfBreakdown)
-        .where('problemName', isGreaterThanOrEqualTo: searchString)
-        .where('problemName', isLessThan: searchString + 'z')
-        .snapshots();
+    // Фильтрация по модели (если выбрана марка)
+    if (selectedBrand.isNotEmpty && selectedModel.isNotEmpty) {
+      query = query.where('carModel', isEqualTo: selectedModel);
+    }
+
+    // Фильтрация по типу поломки
+    if (selectedTypeOfBreakdown.isNotEmpty) {
+      query = query.where('problemType', isEqualTo: selectedTypeOfBreakdown);
+    }
+
+    return query.snapshots();
   }
-  Stream<QuerySnapshot> getAllProblemsStream() {
-    return FirebaseFirestore.instance.collection('problems').snapshots();
-  }
-  }
 
+
+Future<void> userCreateProblemPlus({required String userId})
+async{
+  final userDoc = await FirebaseFirestore.instance.collection('Users').doc(userId).get();
+  final userData = userDoc.data();
+
+// Проверяем, существует ли поле problemsCreated
+  final currentProblemsCreated = userData?['problemsCreated'] ?? 0;
+
+// Увеличиваем значение problemsCreated на 1
+  final newProblemsCreated = currentProblemsCreated + 1;
+
+// Обновляем поле problemsCreated в Firestore
+  await FirebaseFirestore.instance.collection('Users').doc(userId).update({
+    'problemsCreated': newProblemsCreated,
+  });
+}
+
+
+}

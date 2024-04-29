@@ -155,7 +155,7 @@ class _User_ProfileState extends State<User_Profile> {
                                       color: Colors.white, fontSize: 24),
                                 ),
                                 Text(
-                                  userData["problemsCreated"],
+                                  userData["problemsCreated"].toString(),
                                   style: const TextStyle(
                                       color: Colors.white, fontSize: 24),
                                 )
@@ -174,7 +174,7 @@ class _User_ProfileState extends State<User_Profile> {
                                       color: Colors.white, fontSize: 24),
                                 ),
                                 Text(
-                                  userData["problemsDesided"],
+                                  userData["problemsDesided"].toString(),
                                   style: TextStyle(
                                       color: Colors.white, fontSize: 24),
                                 )

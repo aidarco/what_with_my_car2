@@ -51,8 +51,6 @@ class MyApp extends StatelessWidget {
             "reg": (context) => const UserRegistration(),
             "add": (context) =>  AddProblem(),
             "main": (context) => MainPage(),
-
-
           },
           initialRoute: "main",
         ),

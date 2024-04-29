@@ -2,8 +2,8 @@ class UserModel {
   String? name;
   String? description;
   String? id;
-  String? problemsDesided;
-  String? problemsCreated;
+  int? problemsDesided;
+  int? problemsCreated;
 
   UserModel(
       {this.name,

@@ -61,7 +61,6 @@ class _ProblemState extends State<Problem> {
                     suffixIcon: IconButton(
                       onPressed: () {
                         print(selectedBrand);
-
                         List<String> typesOfBreakdowns = [
                           "Ходовая часть (подвеска)",
                           'Тормозная система',
@@ -143,125 +142,138 @@ class _ProblemState extends State<Problem> {
                                     "Фильтры",
                                     style: TextStyle(color: Colors.white),
                                   ),
-                                  content: SingleChildScrollView(
-                                    child: Column(
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child:
-                                              DropdownButtonFormField<String>(
-                                            decoration: const InputDecoration(
-                                                labelText: 'Марка машины',
-                                                labelStyle: TextStyle(
-                                                    color: Colors.white),
-                                                contentPadding:
-                                                    EdgeInsets.symmetric(
-                                                        vertical: 6),
-                                                focusedBorder:
-                                                    UnderlineInputBorder(
-                                                        borderSide: BorderSide(
-                                                            color:
-                                                                Colors.white))),
-                                            value: selectedBrand,
-                                            items: brands.map((String brand) {
-                                              return DropdownMenuItem<String>(
-                                                value: brand,
-                                                child: Text(brand),
-                                              );
-                                            }).toList(),
-                                            onChanged: (String? value) {
-                                              setState(() {
-                                                selectedBrand = value;
-                                                selectedModel = null; // Сбросить выбранную модель при смене марки
-                                              });
+                                  content: StatefulBuilder(
+                                      builder: (BuildContext context, StateSetter setState)  {
+                                      return SingleChildScrollView(
+                                        child: Column(
+                                          children: [
 
-                                            },
-                                          ),
+                                            Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child:
+                                                  DropdownButtonFormField<String>(
+                                                    style: TextStyle(color: Colors.white),
+                                                    dropdownColor: Colors.grey.shade700,
+                                                decoration: const InputDecoration(
+                                                    labelText: 'Марка машины',
+                                                    labelStyle: TextStyle(
+                                                        color: Colors.white),
+                                                    contentPadding:
+                                                        EdgeInsets.symmetric(
+                                                            vertical: 6),
+                                                    focusedBorder:
+                                                        UnderlineInputBorder(
+                                                            borderSide: BorderSide(
+                                                                color:
+                                                                    Colors.white))),
+                                                value: selectedBrand,
+                                                items: brands.map((String brand) {
+                                                  return DropdownMenuItem<String>(
+                                                    value: brand,
+                                                    child: Text(brand),
+                                                  );
+                                                }).toList(),
+                                                onChanged: (String? value) {
+                                                  setState(() {
+                                                    selectedBrand = value;
+                                                    selectedModel = null; // Сбросить выбранную модель при смене марки
+                                                  });
+
+                                                },
+                                              ),
+                                            ),
+
+
+                                            Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child:
+                                                  DropdownButtonFormField<String>(
+                                                    style: TextStyle(color: Colors.white),
+                                                    dropdownColor: Colors.grey.shade700,
+                                                decoration: const InputDecoration(
+                                                    labelText: 'Модель машины',
+                                                    labelStyle: TextStyle(
+                                                        color: Colors.white),
+                                                    contentPadding:
+                                                        EdgeInsets.symmetric(
+                                                            vertical: 6),
+                                                    focusColor: Colors.white,
+                                                    hoverColor: Colors.white,
+                                                    focusedBorder:
+                                                        UnderlineInputBorder(
+                                                            borderSide: BorderSide(
+                                                                color:
+                                                                    Colors.white))),
+                                                value: selectedModel,
+                                                items: selectedBrand != null
+                                                    ? modelsByBrand[selectedBrand!]!
+                                                        .map((String model) {
+                                                        return DropdownMenuItem<
+                                                            String>(
+                                                          value: model,
+                                                          child: Text(model),
+                                                        );
+                                                      }).toList()
+                                                    : null,
+                                                // If selectedBrand is null, don't display models
+                                                onChanged: (String? value) {
+                                                  setState(() {
+                                                    selectedModel = value;
+                                                  });
+                                                },
+                                              ),
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child:
+                                                  DropdownButtonFormField<String>(
+                                                    style: TextStyle(color: Colors.white),
+                                                    dropdownColor: Colors.grey.shade700,
+                                                decoration: const InputDecoration(
+                                                    labelText: 'Тип поломки',
+                                                    labelStyle: TextStyle(
+                                                        color: Colors.white),
+                                                    contentPadding:
+                                                        EdgeInsets.symmetric(
+                                                            vertical: 6),
+                                                    focusColor: Colors.white,
+                                                    hoverColor: Colors.white,
+                                                    focusedBorder:
+                                                        UnderlineInputBorder(
+                                                            borderSide: BorderSide(
+                                                                color:
+                                                                    Colors.white))),
+                                                value: selectedTypeOfBreakdown,
+                                                items: typesOfBreakdowns
+                                                    .map((String typesOfBreakdown) {
+                                                  return DropdownMenuItem<String>(
+                                                    value: typesOfBreakdown,
+                                                    child: Text(typesOfBreakdown),
+                                                  );
+                                                }).toList(),
+                                                onChanged: (String? value) {
+                                                    selectedTypeOfBreakdown = value;
+                                                },
+                                              ),
+                                            ),
+                                            const Padding(
+                                              padding: EdgeInsets.all(8.0),
+                                              child: TextField(
+                                                decoration: InputDecoration(
+                                                    hintText: "Год выпуска",
+                                                    hintStyle: TextStyle(
+                                                        color: Colors.white),
+                                                    focusedBorder:
+                                                        UnderlineInputBorder(
+                                                            borderSide: BorderSide(
+                                                                color:
+                                                                    Colors.white))),
+                                              ),
+                                            )
+                                          ],
                                         ),
-                                        Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child:
-                                              DropdownButtonFormField<String>(
-                                            decoration: const InputDecoration(
-                                                labelText: 'Модель машины',
-                                                labelStyle: TextStyle(
-                                                    color: Colors.white),
-                                                contentPadding:
-                                                    EdgeInsets.symmetric(
-                                                        vertical: 6),
-                                                focusColor: Colors.white,
-                                                hoverColor: Colors.white,
-                                                focusedBorder:
-                                                    UnderlineInputBorder(
-                                                        borderSide: BorderSide(
-                                                            color:
-                                                                Colors.white))),
-                                            value: selectedModel,
-                                            items: selectedBrand != null
-                                                ? modelsByBrand[selectedBrand!]!
-                                                    .map((String model) {
-                                                    return DropdownMenuItem<
-                                                        String>(
-                                                      value: model,
-                                                      child: Text(model),
-                                                    );
-                                                  }).toList()
-                                                : null,
-                                            // If selectedBrand is null, don't display models
-                                            onChanged: (String? value) {
-                                              setState(() {
-                                                selectedModel = value;
-                                              });
-                                            },
-                                          ),
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child:
-                                              DropdownButtonFormField<String>(
-                                            decoration: const InputDecoration(
-                                                labelText: 'Тип поломки',
-                                                labelStyle: TextStyle(
-                                                    color: Colors.white),
-                                                contentPadding:
-                                                    EdgeInsets.symmetric(
-                                                        vertical: 6),
-                                                focusColor: Colors.white,
-                                                hoverColor: Colors.white,
-                                                focusedBorder:
-                                                    UnderlineInputBorder(
-                                                        borderSide: BorderSide(
-                                                            color:
-                                                                Colors.white))),
-                                            value: selectedTypeOfBreakdown,
-                                            items: typesOfBreakdowns
-                                                .map((String typesOfBreakdown) {
-                                              return DropdownMenuItem<String>(
-                                                value: typesOfBreakdown,
-                                                child: Text(typesOfBreakdown),
-                                              );
-                                            }).toList(),
-                                            onChanged: (String? value) {
-                                                selectedTypeOfBreakdown = value;
-                                            },
-                                          ),
-                                        ),
-                                        const Padding(
-                                          padding: EdgeInsets.all(8.0),
-                                          child: TextField(
-                                            decoration: InputDecoration(
-                                                hintText: "Год выпуска",
-                                                hintStyle: TextStyle(
-                                                    color: Colors.white),
-                                                focusedBorder:
-                                                    UnderlineInputBorder(
-                                                        borderSide: BorderSide(
-                                                            color:
-                                                                Colors.white))),
-                                          ),
-                                        )
-                                      ],
-                                    ),
+                                      );
+                                    }
                                   ),
                                   actions: [
                                     TextButton(

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../repos/firebase_firestore.dart';
@@ -191,7 +192,7 @@ class _AddProblemState extends State<AddProblem> {
                       style: TextStyle(color: Colors.white),
                     dropdownColor: Colors.grey.shade700,
                     decoration: const InputDecoration(
-                        labelText: 'Вид поломки',
+                        labelText: 'Модель',
                         labelStyle: TextStyle(
                             color: Colors.white),
                         contentPadding:
@@ -309,6 +310,40 @@ class _AddProblemState extends State<AddProblem> {
                     ? CircularProgressIndicator() // Индикатор загрузки
                     : TextButton(
                   onPressed: () async {
+
+                    if (problemNameController.text.isEmpty) {
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: Text('Ошибка'),
+                          content: Text('Пожалуйста, введите название проблемы'),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: Text('OK'),
+                            ),
+                          ],
+                        ),
+                      );
+                      return;
+                    }
+
+                    if (problemDescriptionController.text.isEmpty) {
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: Text('Ошибка'),
+                          content: Text('Пожалуйста, введите описание проблемы'),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: Text('OK'),
+                            ),
+                          ],
+                        ),
+                      );
+                      return;
+                    }
                     setState(() {
                       isUploading = true;
                     });
@@ -322,6 +357,8 @@ class _AddProblemState extends State<AddProblem> {
                       imagePaths: selectedImagePaths,
                       year: yearController.text
                     );
+
+                  await   Firebasefirestore().userCreateProblemPlus(userId: FirebaseAuth.instance.currentUser!.uid);
                     setState(() {
                       isUploading = false;
                     });
