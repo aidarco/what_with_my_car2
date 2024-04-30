@@ -17,14 +17,19 @@ class Auth extends StatelessWidget {
         child: Column(
           // mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const SizedBox(
-              height: 136,
-            ),
+
             Container(
-              height: 280,
+              height: 300, // Половина высоты экрана
               decoration: const BoxDecoration(
+
                   image: DecorationImage(
-                      image: AssetImage("lib/images/дарт.png"))),
+                      fit: BoxFit.fill, // Растягивать изображение, чтобы заполнить контейнер
+
+                      image: AssetImage("lib/images/logo.png"))),
+            ),
+            Text("Авторизация", style: TextStyle(color: Colors.white, fontSize: 36),),
+            const SizedBox(
+              height: 24,
             ),
             TextFieldAuthWidget(
               controller: emailController,
@@ -57,6 +62,16 @@ class Auth extends StatelessWidget {
                   "Новый пользователь ?",
                   style: TextStyle(fontSize: 18, color: Colors.white),
                 )),
+
+            GestureDetector(
+                onTap: () {
+                  Navigator.pushNamed(context, "reg");
+                },
+                child: const Text(
+                  "Забыли пароль ?",
+                  style: TextStyle(fontSize: 18, color: Colors.white),
+                )),
+
           ],
         ),
       ),

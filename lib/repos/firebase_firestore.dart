@@ -186,6 +186,36 @@ async{
     'problemsCreated': newProblemsCreated,
   });
 }
+  Future<void> markCommentAsHelpful(CommentModel comment, String id) async {
+    try {
+      // Получаем ссылку на документ проблемы
+      final problemDocRef = FirebaseFirestore.instance.collection('problems').doc(id);
 
+      // Находим индекс комментария, который нужно обновить
+      final problemSnapshot = await problemDocRef.get();
+      final List<dynamic> comments = problemSnapshot.data()?['comments'] ?? [];
+      final int commentIndex = comments.indexWhere((item) => item['text'] == comment.text);
+
+      if (commentIndex != -1) {
+        // Обновляем поле isHelpful для соответствующего комментария в коллекции comments
+        comments[commentIndex]['isHelpful'] = true;
+
+        // Обновляем документ проблемы с обновленным массивом комментариев
+        await problemDocRef.update({'comments': comments});
+
+        // Увеличиваем счетчик problemsDesided у пользователя
+        User? user = FirebaseAuth.instance.currentUser;
+        if (user != null) {
+          final userDocRef = FirebaseFirestore.instance.collection("Users").doc(user.uid);
+          await userDocRef.update({'problemsDesided': FieldValue.increment(1)});
+        }
+      } else {
+        print('Комментарий не найден');
+      }
+    } catch (e) {
+      // Обработка ошибок
+      print('Ошибка при отметке комментария как полезного: $e');
+    }
+  }
 
 }

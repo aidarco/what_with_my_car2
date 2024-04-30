@@ -354,7 +354,7 @@ class _ProblemState extends State<Problem> {
                 ListView.builder(
                   itemCount: problems.length,
                   itemBuilder: (context, index) => Padding(
-                    padding: const EdgeInsets.only(top: 24, bottom: 16),
+                    padding: const EdgeInsets.only(top: 24, bottom: 16, right: 4, left: 4),
                     child: GestureDetector(
                       onTap: () {
                         Get.to(() => PageOfProblem(),
@@ -387,24 +387,33 @@ class _ProblemState extends State<Problem> {
                                 ),
                               ),
                             ),
-                            Text(
-                              problems[index].problemName,
-                              style: const TextStyle(
-                                  color: Colors.white, fontSize: 24),
-                            ),
-                            const SizedBox(height: 6),
-                            Text(
-                              problems[index].id,
-                              style: const TextStyle(
-                                  color: Colors.white, fontSize: 20),
-                            ),
-                            const SizedBox(height: 6),
-                            Text(
-                              problems[index].description,
-                              style: const TextStyle(
-                                  color: Colors.white, fontSize: 14),
-                            ),
-                            const SizedBox(height: 6),
+
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(children: [
+                                Text(
+                                  problems[index].problemName,
+                                  style: const TextStyle(
+                                      color: Colors.white, fontSize: 20,  // Максимальное количество строк
+                                    overflow: TextOverflow.ellipsis,),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  problems[index].carMark + " " + problems[index].carModel,
+                                  style: const TextStyle(
+                                      color: Colors.white, fontSize: 20, overflow: TextOverflow.ellipsis,),
+                                ),
+                                const SizedBox(height: 6),
+                                Text(
+                                  problems[index].description,
+                                  maxLines: 2,
+                                  style: const TextStyle(
+                                      color: Colors.white, fontSize: 14, overflow: TextOverflow.ellipsis, ),
+                                ),
+                                const SizedBox(height: 6),
+                              ],),
+                            )
+
                           ],
                         ),
                       ),

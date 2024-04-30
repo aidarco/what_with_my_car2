@@ -3,22 +3,15 @@ class CommentModel {
   final String userName;
   final String userAvatar;
   final String text;
+  final bool isHelpful;
 
   CommentModel({
     required this.userId,
     required this.userName,
     required this.userAvatar,
     required this.text,
+    this.isHelpful = false, // По умолчанию isHelpful будет false
   });
-
-  Map<String, dynamic> toJson() {
-    return {
-      'userId': userId,
-      'userName': userName,
-      'userAvatar': userAvatar,
-      'text': text,
-    };
-  }
 
   factory CommentModel.fromMap(Map<String, dynamic> map) {
     return CommentModel(
@@ -26,6 +19,17 @@ class CommentModel {
       userName: map['userName'],
       userAvatar: map['userAvatar'],
       text: map['text'],
+      isHelpful: map['isHelpful'] ?? false, // Получаем значение isHelpful из map, если оно присутствует, иначе false
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'userId': userId,
+      'userName': userName,
+      'userAvatar': userAvatar,
+      'text': text,
+      'isHelpful': isHelpful,
+    };
   }
 }
