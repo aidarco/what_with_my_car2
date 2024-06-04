@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import '../repos/firebase_firestore.dart';
 
@@ -260,23 +261,26 @@ class _AddProblemState extends State<AddProblem> {
                     },
                   ),
                 ),
-                 Padding(
+                Padding(
                   padding: EdgeInsets.all(8.0),
                   child: TextField(
+                    style: TextStyle(color: Colors.white),
                     controller: yearController,
                     decoration: InputDecoration(
-                        hintText: "Год выпуска",
-                        hintStyle: TextStyle(
-                            color: Colors.white),
-                        focusedBorder:
-                        UnderlineInputBorder(
-                            borderSide: BorderSide(
-                                color:
-                                Colors.white))),
+                      hintText: "Год выпуска",
+                      hintStyle: TextStyle(color: Colors.white),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white),
+                      ),
+                    ),
+                    keyboardType: TextInputType.number, // Устанавливаем тип клавиатуры
+                    inputFormatters: <TextInputFormatter>[
+                      FilteringTextInputFormatter.digitsOnly, // Фильтруем только цифры
+                    ],
                   ),
                 ),
                 const SizedBox(
-                  height: 16,
+                  height: 24,
                 ),
                 ElevatedButton(
                   onPressed: isUploading ? null : pickImage,
@@ -307,11 +311,13 @@ class _AddProblemState extends State<AddProblem> {
                   height: 8,
                 ),
                 isUploading
-                    ? CircularProgressIndicator() // Индикатор загрузки
+                    ? Padding(
+                      padding: const EdgeInsets.only(top: 10),
+                      child: CircularProgressIndicator( color:  Colors.white,),
+                    ) // Индикатор загрузки
                     : TextButton(
                   onPressed: () async {
-
-                    if (problemNameController.text.isEmpty) {
+                    if (problemNameController.text.trim().isEmpty) {
                       showDialog(
                         context: context,
                         builder: (context) => AlertDialog(
@@ -328,7 +334,7 @@ class _AddProblemState extends State<AddProblem> {
                       return;
                     }
 
-                    if (problemDescriptionController.text.isEmpty) {
+                    if (problemDescriptionController.text.trim().isEmpty) {
                       showDialog(
                         context: context,
                         builder: (context) => AlertDialog(
@@ -355,7 +361,8 @@ class _AddProblemState extends State<AddProblem> {
                       problemName: problemNameController.text,
                       description: problemDescriptionController.text,
                       imagePaths: selectedImagePaths,
-                      year: yearController.text
+                      year: yearController.text,
+                      date: DateTime.now(),
                     );
 
                   await   Firebasefirestore().userCreateProblemPlus(userId: FirebaseAuth.instance.currentUser!.uid);

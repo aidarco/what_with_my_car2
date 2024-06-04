@@ -18,7 +18,7 @@ class Nav_bar extends StatefulWidget {
 class _Nav_barState extends State<Nav_bar> {
   int _curentInxed = 0;
 
-  final tabs = [ const Problem(), const News(),  const User_Profile (), ];
+  final tabs = [News(), const Problem(), const User_Profile (), ];
 
   @override
   Widget build(BuildContext context) {

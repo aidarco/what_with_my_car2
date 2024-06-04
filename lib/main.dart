@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:what_with_my_car/ui/add_problem.dart';
+import 'package:what_with_my_car/ui/forgot_password.dart';
 import 'package:what_with_my_car/ui/mainPage.dart';
 import 'package:what_with_my_car/ui/reg_page.dart';
+import 'package:what_with_my_car/ui/user_problems_page.dart';
 import 'blocs/authBloc/auth_bloc.dart';
 import 'blocs/regBloc/reg_bloc.dart';
 import 'repos/firebase_firestore.dart';
@@ -46,11 +48,14 @@ class MyApp extends StatelessWidget {
           ),
           routes: {
             "/": (context) => const Auth(),
-            "news": (context) => const News(),
+            "news": (context) =>  News(),
             "nav_bar": (context) => const Nav_bar(),
             "reg": (context) => const UserRegistration(),
             "add": (context) =>  AddProblem(),
-            "main": (context) => MainPage(),
+            "main": (context) => const MainPage(),
+            "userProblem": (context) => const UserProblem(),
+            "forgotPassword": (context) =>  ForgotPasswordScreen(),
+
           },
           initialRoute: "main",
         ),

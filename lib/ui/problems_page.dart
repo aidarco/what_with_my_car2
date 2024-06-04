@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:what_with_my_car/ui/page_of_problem.dart';
 
 import '../models/problemModel.dart';
@@ -14,9 +15,6 @@ class Problem extends StatefulWidget {
 }
 
 class _ProblemState extends State<Problem> {
-
-
-
   void updateFilters(String? brand, String? model, String? typeOfBreakdown) {
     setState(() {
       selectedBrand = brand;
@@ -25,21 +23,21 @@ class _ProblemState extends State<Problem> {
     });
   }
 
-
   String? selectedBrand;
   String? selectedModel;
   String? selectedTypeOfBreakdown;
 
+  TextEditingController firstYear = TextEditingController();
+  TextEditingController secondYear = TextEditingController();
 
   @override
   void initState() {
     super.initState();
   }
+
   var searchController = "";
 
   Widget build(BuildContext context) {
-
-
     return Scaffold(
       backgroundColor: Colors.grey.shade900,
       appBar: AppBar(
@@ -49,8 +47,7 @@ class _ProblemState extends State<Problem> {
             child: Padding(
               padding: const EdgeInsets.fromLTRB(8, 0, 8, 10),
               child: TextField(
-                onChanged: (value)
-                {
+                onChanged: (value) {
                   setState(() {
                     searchController = value;
                   });
@@ -60,7 +57,6 @@ class _ProblemState extends State<Problem> {
                     prefixIcon: const Icon(Icons.search),
                     suffixIcon: IconButton(
                       onPressed: () {
-                        print(selectedBrand);
                         List<String> typesOfBreakdowns = [
                           "Ходовая часть (подвеска)",
                           'Тормозная система',
@@ -135,176 +131,190 @@ class _ProblemState extends State<Problem> {
                         showDialog(
                           context: context,
                           builder: (BuildContext context) {
-
-                                return AlertDialog(
-                                  backgroundColor: Colors.grey.shade600,
-                                  title: const Text(
-                                    "Фильтры",
+                            return AlertDialog(
+                              backgroundColor: Colors.grey.shade600,
+                              title: const Text(
+                                "Фильтры",
+                                style: TextStyle(color: Colors.white),
+                              ),
+                              content: StatefulBuilder(builder:
+                                  (BuildContext context, StateSetter setState) {
+                                return SingleChildScrollView(
+                                  child: Column(
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: DropdownButtonFormField<String>(
+                                          style: TextStyle(color: Colors.white),
+                                          dropdownColor: Colors.grey.shade700,
+                                          decoration: const InputDecoration(
+                                              labelText: 'Марка машины',
+                                              labelStyle: TextStyle(
+                                                  color: Colors.white),
+                                              contentPadding:
+                                                  EdgeInsets.symmetric(
+                                                      vertical: 6),
+                                              focusedBorder:
+                                                  UnderlineInputBorder(
+                                                      borderSide: BorderSide(
+                                                          color:
+                                                              Colors.white))),
+                                          value: selectedBrand,
+                                          items: brands.map((String brand) {
+                                            return DropdownMenuItem<String>(
+                                              value: brand,
+                                              child: Text(brand),
+                                            );
+                                          }).toList(),
+                                          onChanged: (String? value) {
+                                            setState(() {
+                                              selectedBrand = value;
+                                              selectedModel =
+                                                  null; // Сбросить выбранную модель при смене марки
+                                            });
+                                          },
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: DropdownButtonFormField<String>(
+                                          style: TextStyle(color: Colors.white),
+                                          dropdownColor: Colors.grey.shade700,
+                                          decoration: const InputDecoration(
+                                              labelText: 'Модель машины',
+                                              labelStyle: TextStyle(
+                                                  color: Colors.white),
+                                              contentPadding:
+                                                  EdgeInsets.symmetric(
+                                                      vertical: 6),
+                                              focusColor: Colors.white,
+                                              hoverColor: Colors.white,
+                                              focusedBorder:
+                                                  UnderlineInputBorder(
+                                                      borderSide: BorderSide(
+                                                          color:
+                                                              Colors.white))),
+                                          value: selectedModel,
+                                          items: selectedBrand != null
+                                              ? modelsByBrand[selectedBrand!]!
+                                                  .map((String model) {
+                                                  return DropdownMenuItem<
+                                                      String>(
+                                                    value: model,
+                                                    child: Text(model),
+                                                  );
+                                                }).toList()
+                                              : null,
+                                          // If selectedBrand is null, don't display models
+                                          onChanged: (String? value) {
+                                            setState(() {
+                                              selectedModel = value;
+                                            });
+                                          },
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: DropdownButtonFormField<String>(
+                                          style: TextStyle(color: Colors.white),
+                                          dropdownColor: Colors.grey.shade700,
+                                          decoration: const InputDecoration(
+                                              labelText: 'Тип поломки',
+                                              labelStyle: TextStyle(
+                                                  color: Colors.white),
+                                              contentPadding:
+                                                  EdgeInsets.symmetric(
+                                                      vertical: 6),
+                                              focusColor: Colors.white,
+                                              hoverColor: Colors.white,
+                                              focusedBorder:
+                                                  UnderlineInputBorder(
+                                                      borderSide: BorderSide(
+                                                          color:
+                                                              Colors.white))),
+                                          value: selectedTypeOfBreakdown,
+                                          items: typesOfBreakdowns
+                                              .map((String typesOfBreakdown) {
+                                            return DropdownMenuItem<String>(
+                                              value: typesOfBreakdown,
+                                              child: Text(typesOfBreakdown),
+                                            );
+                                          }).toList(),
+                                          onChanged: (String? value) {
+                                            selectedTypeOfBreakdown = value;
+                                          },
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: TextField(
+                                          controller: firstYear,
+                                          style: TextStyle(color: Colors.white),
+                                          decoration: InputDecoration(
+                                              hintText: "Год выпуска от",
+                                              hintStyle: TextStyle(
+                                                  color: Colors.white),
+                                              focusedBorder:
+                                                  UnderlineInputBorder(
+                                                      borderSide: BorderSide(
+                                                          color:
+                                                              Colors.white))),
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: TextField(
+                                          controller: secondYear,
+                                          style: TextStyle(color: Colors.white),
+                                          decoration: InputDecoration(
+                                              hintText: "Год выпуска до",
+                                              hintStyle: TextStyle(
+                                                  color: Colors.white),
+                                              focusedBorder:
+                                                  UnderlineInputBorder(
+                                                      borderSide: BorderSide(
+                                                          color:
+                                                              Colors.white))),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                );
+                              }),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    updateFilters(selectedBrand, selectedModel,
+                                        selectedTypeOfBreakdown);
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: const Text(
+                                    'Применить',
                                     style: TextStyle(color: Colors.white),
                                   ),
-                                  content: StatefulBuilder(
-                                      builder: (BuildContext context, StateSetter setState)  {
-                                      return SingleChildScrollView(
-                                        child: Column(
-                                          children: [
-
-                                            Padding(
-                                              padding: const EdgeInsets.all(8.0),
-                                              child:
-                                                  DropdownButtonFormField<String>(
-                                                    style: TextStyle(color: Colors.white),
-                                                    dropdownColor: Colors.grey.shade700,
-                                                decoration: const InputDecoration(
-                                                    labelText: 'Марка машины',
-                                                    labelStyle: TextStyle(
-                                                        color: Colors.white),
-                                                    contentPadding:
-                                                        EdgeInsets.symmetric(
-                                                            vertical: 6),
-                                                    focusedBorder:
-                                                        UnderlineInputBorder(
-                                                            borderSide: BorderSide(
-                                                                color:
-                                                                    Colors.white))),
-                                                value: selectedBrand,
-                                                items: brands.map((String brand) {
-                                                  return DropdownMenuItem<String>(
-                                                    value: brand,
-                                                    child: Text(brand),
-                                                  );
-                                                }).toList(),
-                                                onChanged: (String? value) {
-                                                  setState(() {
-                                                    selectedBrand = value;
-                                                    selectedModel = null; // Сбросить выбранную модель при смене марки
-                                                  });
-
-                                                },
-                                              ),
-                                            ),
-
-
-                                            Padding(
-                                              padding: const EdgeInsets.all(8.0),
-                                              child:
-                                                  DropdownButtonFormField<String>(
-                                                    style: TextStyle(color: Colors.white),
-                                                    dropdownColor: Colors.grey.shade700,
-                                                decoration: const InputDecoration(
-                                                    labelText: 'Модель машины',
-                                                    labelStyle: TextStyle(
-                                                        color: Colors.white),
-                                                    contentPadding:
-                                                        EdgeInsets.symmetric(
-                                                            vertical: 6),
-                                                    focusColor: Colors.white,
-                                                    hoverColor: Colors.white,
-                                                    focusedBorder:
-                                                        UnderlineInputBorder(
-                                                            borderSide: BorderSide(
-                                                                color:
-                                                                    Colors.white))),
-                                                value: selectedModel,
-                                                items: selectedBrand != null
-                                                    ? modelsByBrand[selectedBrand!]!
-                                                        .map((String model) {
-                                                        return DropdownMenuItem<
-                                                            String>(
-                                                          value: model,
-                                                          child: Text(model),
-                                                        );
-                                                      }).toList()
-                                                    : null,
-                                                // If selectedBrand is null, don't display models
-                                                onChanged: (String? value) {
-                                                  setState(() {
-                                                    selectedModel = value;
-                                                  });
-                                                },
-                                              ),
-                                            ),
-                                            Padding(
-                                              padding: const EdgeInsets.all(8.0),
-                                              child:
-                                                  DropdownButtonFormField<String>(
-                                                    style: TextStyle(color: Colors.white),
-                                                    dropdownColor: Colors.grey.shade700,
-                                                decoration: const InputDecoration(
-                                                    labelText: 'Тип поломки',
-                                                    labelStyle: TextStyle(
-                                                        color: Colors.white),
-                                                    contentPadding:
-                                                        EdgeInsets.symmetric(
-                                                            vertical: 6),
-                                                    focusColor: Colors.white,
-                                                    hoverColor: Colors.white,
-                                                    focusedBorder:
-                                                        UnderlineInputBorder(
-                                                            borderSide: BorderSide(
-                                                                color:
-                                                                    Colors.white))),
-                                                value: selectedTypeOfBreakdown,
-                                                items: typesOfBreakdowns
-                                                    .map((String typesOfBreakdown) {
-                                                  return DropdownMenuItem<String>(
-                                                    value: typesOfBreakdown,
-                                                    child: Text(typesOfBreakdown),
-                                                  );
-                                                }).toList(),
-                                                onChanged: (String? value) {
-                                                    selectedTypeOfBreakdown = value;
-                                                },
-                                              ),
-                                            ),
-                                            const Padding(
-                                              padding: EdgeInsets.all(8.0),
-                                              child: TextField(
-                                                decoration: InputDecoration(
-                                                    hintText: "Год выпуска",
-                                                    hintStyle: TextStyle(
-                                                        color: Colors.white),
-                                                    focusedBorder:
-                                                        UnderlineInputBorder(
-                                                            borderSide: BorderSide(
-                                                                color:
-                                                                    Colors.white))),
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                      );
-                                    }
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      selectedBrand =
+                                          null; // Сбросить выбранную марку
+                                      selectedModel =
+                                          null; // Сбросить выбранную модель
+                                      selectedTypeOfBreakdown =
+                                          null; // Сбросить выбранный тип поломки
+                                      firstYear.text = "";
+                                      secondYear.text = "";
+                                    });
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: const Text(
+                                    'Отменить',
+                                    style: TextStyle(color: Colors.white),
                                   ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () {
-                                        updateFilters(selectedBrand, selectedModel, selectedTypeOfBreakdown);
-                                        Navigator.of(context).pop();
-                                      },
-                                      child: const Text(
-                                        'Применить',
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                    ),
-
-                                    TextButton(
-                                      onPressed: () {
-                                        setState(() {
-                                          selectedBrand = null; // Сбросить выбранную марку
-                                          selectedModel = null; // Сбросить выбранную модель
-                                          selectedTypeOfBreakdown = null; // Сбросить выбранный тип поломки
-                                        });
-                                        Navigator.of(context).pop();
-                                      },
-                                      child: const Text(
-                                        'Отменить',
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                    ),
-                                  ],
-                                );
-                              },
-
+                                ),
+                              ],
+                            );
+                          },
                         );
                       },
                       icon: const Icon(
@@ -330,10 +340,20 @@ class _ProblemState extends State<Problem> {
         ],
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: Firebasefirestore().getFilteredProblemsStream(selectedBrand ?? "", selectedModel ?? "", selectedTypeOfBreakdown ?? "",searchController) ,
+        stream: Firebasefirestore().getFilteredProblemsStream(
+            selectedBrand ?? "",
+            selectedModel ?? "",
+            selectedTypeOfBreakdown ?? "",
+            searchController,
+            int.tryParse(firstYear.text ?? ""),
+            int.tryParse(secondYear.text ?? "")),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            return Center(child: Text('ошибка: ${snapshot.error}', style: TextStyle(color: Colors.white, fontSize: 15),));
+            return Center(
+                child: Text(
+              'ошибка: ${snapshot.error}',
+              style: TextStyle(color: Colors.white, fontSize: 15),
+            ));
           }
 
           if (!snapshot.hasData) {
@@ -344,6 +364,7 @@ class _ProblemState extends State<Problem> {
               .map((doc) =>
                   ProblemModel.fromMap(doc.data() as Map<String, dynamic>))
               .toList();
+          problems.sort((a, b) => b.date.compareTo(a.date));
 
           return RefreshIndicator(
             onRefresh: () async {
@@ -354,7 +375,8 @@ class _ProblemState extends State<Problem> {
                 ListView.builder(
                   itemCount: problems.length,
                   itemBuilder: (context, index) => Padding(
-                    padding: const EdgeInsets.only(top: 24, bottom: 16, right: 4, left: 4),
+                    padding: const EdgeInsets.only(
+                        top: 24, bottom: 16, right: 4, left: 4),
                     child: GestureDetector(
                       onTap: () {
                         Get.to(() => PageOfProblem(),
@@ -374,46 +396,95 @@ class _ProblemState extends State<Problem> {
                                 height: 330,
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(24),
-                                  image: problems[index].imageUrls.isNotEmpty
-                                      ? DecorationImage(
-                                          image: NetworkImage(
-                                              problems[index].imageUrls.first),
-                                          fit: BoxFit.cover)
-                                      : const DecorationImage(
-                                          image: AssetImage(
-                                              "lib/images/noimage.png"),
-                                          fit: BoxFit.cover,
-                                        ),
+                                ),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(24),
+                                  child: Image.network(
+                                    problems[index].imageUrls.isNotEmpty
+                                        ? problems[index].imageUrls.first
+                                        : "https://www.iephb.ru/wp-content/uploads/2021/01/img-placeholder.png",
+                                    fit: BoxFit.cover,
+                                    loadingBuilder: (BuildContext context,
+                                        Widget child,
+                                        ImageChunkEvent? loadingProgress) {
+                                      if (loadingProgress == null) {
+                                        // Изображение загружено
+                                        return child;
+                                      } else {
+                                        // Изображение загружается
+                                        return Center(
+                                          child: CircularProgressIndicator(
+                                            color: Colors.white,
+                                          ),
+                                        );
+                                      }
+                                    },
+                                  ),
                                 ),
                               ),
                             ),
-
                             Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: Column(children: [
-                                Text(
-                                  problems[index].problemName,
-                                  style: const TextStyle(
-                                      color: Colors.white, fontSize: 20,  // Максимальное количество строк
-                                    overflow: TextOverflow.ellipsis,),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  problems[index].carMark + " " + problems[index].carModel,
-                                  style: const TextStyle(
-                                      color: Colors.white, fontSize: 20, overflow: TextOverflow.ellipsis,),
-                                ),
-                                const SizedBox(height: 6),
-                                Text(
-                                  problems[index].description,
-                                  maxLines: 2,
-                                  style: const TextStyle(
-                                      color: Colors.white, fontSize: 14, overflow: TextOverflow.ellipsis, ),
-                                ),
-                                const SizedBox(height: 6),
-                              ],),
+                              child: Column(
+                                children: [
+                                  Text(
+                                    problems[index].problemName,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 20,
+                                      // Максимальное количество строк
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    problems[index].carMark +
+                                        " " +
+                                        problems[index].carModel +
+                                        " " +
+                                        problems[index].year +
+                                        (problems[index].year.isNotEmpty
+                                            ? "г"
+                                            : ""),
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 20,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Text(
+                                    problems[index].description,
+                                    maxLines: 2,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 14,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  Text(
+                                    problems[index].problemType,
+                                    maxLines: 2,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 14,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  Text(
+                                    DateFormat('yy-MM-dd HH:mm')
+                                        .format(problems[index].date),
+                                    maxLines: 2,
+                                    style: const TextStyle(
+                                      color: Colors.white70,
+                                      fontSize: 14,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 6),
+                                ],
+                              ),
                             )
-
                           ],
                         ),
                       ),

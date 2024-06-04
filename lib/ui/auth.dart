@@ -65,7 +65,7 @@ class Auth extends StatelessWidget {
 
             GestureDetector(
                 onTap: () {
-                  Navigator.pushNamed(context, "reg");
+                  Navigator.pushNamed(context, "forgotPassword");
                 },
                 child: const Text(
                   "Забыли пароль ?",

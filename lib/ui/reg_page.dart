@@ -104,33 +104,18 @@ class RegButton extends StatelessWidget {
     return BlocListener<RegBloc, RegState>(
       listener: (context, state) {
 
-        if (state is RegSucces)
-          {
-            Navigator.pushReplacementNamed(context, "/");
-
-            ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                    content: Text('Пользователь создан успешно')
-                ));
-
-
-          }
-        if (state is RegError)
-          {
-            showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  content: Text(
-                    state.error,
-                    style: const TextStyle(
-                        color: Colors.black,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold),
-                  ),
-                ));
-          }
-
-
+      if (state is RegLoading) {
+         CircularProgressIndicator(color: Colors.white,);
+      }
+        if (state is RegSucces) {
+         Navigator.pushReplacementNamed(context, "/");
+          ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Пользователь создан успешно')));
+        } else if (state is RegError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(state.error), backgroundColor: Colors.red),
+          );
+        }
       },
       child: TextButton(
           onPressed: () {
@@ -138,20 +123,17 @@ class RegButton extends StatelessWidget {
               BlocProvider.of<RegBloc>(context).add(UserReg(
                   email: emailController.text,
                   password: passwordController.text));
-            }
-            else {
+            } else {
               ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                      content: Text('Пароли не совпадают')
-                  ));
+                  const SnackBar(content: Text('Пароли не совпадают')));
             }
           },
           style: ButtonStyle(
             splashFactory: NoSplash.splashFactory,
             shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                 RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                )),
+              borderRadius: BorderRadius.circular(16),
+            )),
             backgroundColor: MaterialStateProperty.all(Colors.grey.shade800),
           ),
           child: const Text(

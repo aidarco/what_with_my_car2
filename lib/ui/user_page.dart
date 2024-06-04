@@ -1,114 +1,21 @@
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:get/get.dart';
 
-class User_Profile extends StatefulWidget {
-  const User_Profile({super.key});
+class UserPage extends StatelessWidget {
+  UserPage({super.key});
 
-  @override
-  State<User_Profile> createState() => _User_ProfileState();
-}
-
-class _User_ProfileState extends State<User_Profile> {
-  final currentUser = FirebaseAuth.instance.currentUser!;
-
-  Future<XFile?> pickImageFromGallery() async {
-    final ImagePicker picker = ImagePicker();
-    try {
-      XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery);
-      return pickedFile;
-    } on PlatformException catch (e) {
-      print("Failed to pick image: $e");
-      return null;
-    }
-  }
-
-  Future<String> saveImageToFirebaseStorage(
-      String userId, File imageFile) async {
-    final Reference storageRef =
-        FirebaseStorage.instance.ref().child('avatars/$userId/avatar.jpg');
-    final UploadTask uploadTask = storageRef.putFile(imageFile);
-    await uploadTask;
-    final String downloadUrl = await storageRef.getDownloadURL();
-    return downloadUrl;
-  }
-
-  Future<void> updateAvatarInFirestore(String userId, String avatarUrl) async {
-    final CollectionReference usersCollection =
-        FirebaseFirestore.instance.collection('Users');
-    await usersCollection.doc(userId).update({'avatar': avatarUrl});
-  }
-
-  Future<void> _showEditProfileDialog(
-      String currentName, String currentDescription) async {
-    String newName = currentName;
-    String newDescription = currentDescription;
-
-    await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Редактирование профиля'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: TextEditingController(text: newName),
-                onChanged: (value) => newName = value,
-                decoration: InputDecoration(labelText: 'Имя'),
-              ),
-              TextField(
-                controller: TextEditingController(text: newDescription),
-                onChanged: (value) => newDescription = value,
-                decoration: InputDecoration(labelText: 'Описание'),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text('назад'),
-            ),
-            TextButton(
-              onPressed: () async {
-                if (newName.trim().isNotEmpty) { // Проверяем, что имя пользователя не пустое после удаления начальных и конечных пробелов
-                  await FirebaseFirestore.instance
-                      .collection('Users')
-                      .doc(currentUser.uid)
-                      .update({
-                    'name': newName,
-                    'description': newDescription,
-                  });
-                  Navigator.of(context).pop();
-                } else {
-                  // Отображаем сообщение об ошибке, если имя пользователя пустое
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text('Имя пользоватея не может быть пустым'),
-                    duration: Duration(seconds: 2),
-                  ));
-                }
-              },
-              child: Text('Сохранить'),
-            ),
-          ],
-        );
-      },
-    );
-  }
+  final String id = Get.arguments["id"];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(backgroundColor: Colors.grey.shade800,),
         backgroundColor: Colors.grey.shade900,
         body: StreamBuilder(
             stream: FirebaseFirestore.instance
                 .collection("Users")
-                .doc(currentUser.uid)
+                .doc(id)
                 .snapshots(),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
@@ -135,28 +42,6 @@ class _User_ProfileState extends State<User_Profile> {
                                         ? NetworkImage(userData["avatar"])
                                         : const NetworkImage(
                                             "https://www.iephb.ru/wp-content/uploads/2021/01/img-placeholder.png")),
-                                Positioned(
-                                    bottom: 1,
-                                    right: 5,
-                                    child: IconButton(
-                                        onPressed: () async {
-                                          XFile? pickedImage =
-                                              await pickImageFromGallery();
-                                          if (pickedImage != null) {
-                                            setState(() {});
-                                            String imageUrl =
-                                                await saveImageToFirebaseStorage(
-                                                    currentUser.uid,
-                                                    File(pickedImage.path));
-                                            await updateAvatarInFirestore(
-                                                currentUser.uid, imageUrl);
-                                          }
-                                        },
-                                        icon: const Icon(
-                                          Icons.cached,
-                                          color: Colors.white,
-                                          size: 50,
-                                        )))
                               ],
                             ),
                           ),
@@ -256,33 +141,6 @@ class _User_ProfileState extends State<User_Profile> {
                           ),
                         ),
                       ),
-
-
-                      TextButton(
-                          onPressed: () {
-                            Navigator.pushNamed(context, "userProblem");
-                          },
-                          child: Text(
-                            "Ваши проблемы",
-                            style: TextStyle(color: Colors.white, fontSize: 24),
-                          )),
-                      TextButton(
-                          onPressed: () {
-                            _showEditProfileDialog(
-                                userData["name"], userData["description"]);
-                          },
-                          child: Text(
-                            "Редактировать",
-                            style: TextStyle(color: Colors.white, fontSize: 24),
-                          )),
-                      TextButton(
-                          onPressed: () {
-                            FirebaseAuth.instance.signOut();
-                            Navigator.pushNamed(context, "/");
-                          },
-                          child: const Text("Выйти",
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 24)))
                     ],
                   ),
                 );

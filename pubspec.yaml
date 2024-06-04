@@ -44,8 +44,12 @@ dependencies:
   firebase_storage: ^11.6.0
   get: ^4.6.6
   flutter_typeahead: ^5.2.0
+  intl: any
+  photo_view: ^0.15.0
 
 dev_dependencies:
+  flutter_launcher_icons: "^0.13.1"
+
   flutter_test:
     sdk: flutter
 
@@ -67,7 +71,10 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
-
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "lib/images/playstore.png"
   assets:
     - lib/images/
   #   - images/a_dot_ham.jpeg

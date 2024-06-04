@@ -1,15 +1,15 @@
 class CommentModel {
   final String userId;
   final String userName;
-  final String userAvatar;
   final String text;
   final bool isHelpful;
+  DateTime date;
 
   CommentModel({
     required this.userId,
     required this.userName,
-    required this.userAvatar,
     required this.text,
+    required this.date,
     this.isHelpful = false, // По умолчанию isHelpful будет false
   });
 
@@ -17,8 +17,8 @@ class CommentModel {
     return CommentModel(
       userId: map['userId'],
       userName: map['userName'],
-      userAvatar: map['userAvatar'],
       text: map['text'],
+      date: map['date'].toDate(),
       isHelpful: map['isHelpful'] ?? false, // Получаем значение isHelpful из map, если оно присутствует, иначе false
     );
   }
@@ -27,8 +27,8 @@ class CommentModel {
     return {
       'userId': userId,
       'userName': userName,
-      'userAvatar': userAvatar,
       'text': text,
+      'date': date,
       'isHelpful': isHelpful,
     };
   }

@@ -11,7 +11,7 @@ class RegBloc extends Bloc<RegEvent, RegState> {
   RegBloc({required this.repo}) : super(RegInitial()) {
     on<UserReg>((event, emit) async {
 
-
+      emit(RegLoading());
       try {
         await repo.firebaseReg(email: event.email, password: event.password);
         emit(RegSucces());
